@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Modify Student Information</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <h1>Modify Page Title</h1>
+    <nav>
+        <ul>
+            <li><a href="{{ url_for('in_page') }}">In</a></li>
+            <li><a href="{{ url_for('out_page') }}">Out</a></li>
+            <li>
+                <a href="#">Modify</a>
+                <ul>
+                    <li><a href="{{ url_for('modify_student') }}">Student</a></li>
+                    <li><a href="{{ url_for('modify_instrument') }}">Instrument</a></li>
+                    <li><a href="{{ url_for('modify_loan') }}">Loan</a></li>
+                </ul>
+            </li>
+            <li><a href="{{ url_for('return_page') }}">Return</a></li>
+            <li><a href="{{ url_for('info_page') }}">Info</a></li>
+        </ul>
+    </nav>
+</body>
+</html>
