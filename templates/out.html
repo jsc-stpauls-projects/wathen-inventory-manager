@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Loan Out Instrument</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+        <style>
+            #student-dropdown, #instrument-dropdown {
+                position: relative;
+            }
+
+            #student-suggestions, #instrument-suggestions {
+                position: absolute;
+                background-color: #f1f1f1;
+                box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+                z-index: 1;
+                max-height: 200px;
+                overflow-y: auto;
+            }
+
+            #student-suggestions div, #instrument-suggestions div {
+                padding: 8px 16px;
+                cursor: pointer;
+            }
+
+            #student-suggestions div:hover, #instrument-suggestions div:hover {
+                background-color: #ddd;
+            }
+        </style>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    </head>
+<body>
+    <h1>Loan Out Instrument</h1>
+    <nav>
+        <ul>
+            <li><a href="{{ url_for('in_page') }}">In</a></li>
+            <li><a href="{{ url_for('out_page') }}">Out</a></li>
+            <li>
+                <a href="#">Modify</a>
+                <ul>
+                    <li><a href="{{ url_for('modify_student') }}">Student</a></li>
+                    <li><a href="{{ url_for('modify_instrument') }}">Instrument</a></li>
+                    <li><a href="{{ url_for('modify_loan') }}">Loan</a></li>
+                </ul>
+            </li>            
+            <li>
+                <a href="#">Information</a>
+                <ul>
+                    <li><a href="{{ url_for('info_student') }}">Student</a></li>
+                    <li><a href="{{ url_for('info_instrument') }}">Instrument</a></li>
+                </ul>
+            </li>
+            <li><a href="{{ url_for('return_page') }}">Return</a></li>
+        </ul>
+    </nav>
+
+    <main>
+            <form method="POST" action="{{ url_for('out_page') }}">
+                <div id="student-dropdown">
+                    <label for="student_search">Student Search:</label>
+                    <input type="text" id="student_search" name="student_search">
+                    <div id="student-suggestions"></div>
+                </div>
+    
+                <div id="instrument-dropdown">
+                    <label for="instrument_search">Instrument Search:</label>
+                    <input type="text" id="instrument_search" name="instrument_search">
+                    <div id="instrument-suggestions"></div>
+                </div>
+
+            <label for="date_of_loan">Date of Loan:</label>
+            <input type="date" id="date_of_loan" name="date_of_loan" required>
+
+            <input type="hidden" id="instrument_id" name="instrument_id" value="">
+            <input type="hidden" id="student_id" name="student_id" value="">
+
+            <label for="duration">Duration:</label>
+            <input type="number" id="duration" name="duration" min="1" required>
+            <select id="duration_period" name="duration_period">
+                <option value="half-term">Half-terms</option>
+                <option value="term">Terms</option>
+                <option value="year">Years</option>
+            </select>
+
+            <label for="cost">Cost:</label>
+            <input type="number" id="cost" name="cost" step="0.01" required>
+
+            <label for="date_of_return">Date of Return:</label>
+            <input type="date" id="date_of_return" name="date_of_return" required>
+
+            <div id="error-message"></div>
+
+            <button type="submit">Submit</button>
+        </form>
+    </main>
+    <script>
+        $(document).ready(function() {
+            $('#student_search').on('input', function() {
+                var searchTerm = $(this).val().toLowerCase();
+                if (searchTerm.length > 0) {
+                    $.ajax({
+                        url: '/get_students',
+                        type: 'GET',
+                        data: { search_term: searchTerm },
+                        success: function(response) {
+                            var suggestions = '';
+                            $.each(response.students, function(index, student) {
+                                var displayName = student.display_name.toLowerCase();
+                                var boldName = student.display_name.replace(new RegExp(searchTerm, 'gi'), function(match) {
+                                    return '<b>' + match + '</b>';
+                                });
+                                suggestions += '<div data-student-id="' + student.id + '">' + boldName + '</div>';
+                            });
+                            $('#student-suggestions').html(suggestions);
+                        },
+                        error: function() {
+                            $('#student-suggestions').html('Error fetching student data');
+                        }
+                    });
+                } else {
+                    $('#student-suggestions').html('');
+                }
+            });
+
+            $('#student-suggestions').on('click', 'div', function() {
+                var studentId = $(this).data('student-id');
+                $('#student_search').val($(this).text());
+                $('#student-suggestions').html('');
+                $('#student_id').val(studentId);
+            });
+
+            $('#instrument_search').on('input', function() {
+                var searchTerm = $(this).val().toLowerCase();
+                if (searchTerm.length > 0) {
+                    $.ajax({
+                        url: '/get_instruments',
+                        type: 'GET',
+                        data: { search_term: searchTerm },
+                        success: function(response) {
+                            var suggestions = '';
+                            $.each(response.instruments, function(index, instrument) {
+                                var displayName = instrument.name.toLowerCase();
+                                var boldName = instrument.name.replace(new RegExp(searchTerm, 'gi'), function(match) {
+                                    return '<b>' + match + '</b>';
+                                });
+                                var school = instrument.school.replace(/\b\w/g, function(char) {
+                                    return char.toUpperCase();
+                                });
+                                suggestions += '<div data-instrument-id="' + instrument.id + '">' + boldName + ' - ID: ' + instrument.id + ' School: ' + school + '</div>';
+                            });
+                            $('#instrument-suggestions').html(suggestions);
+                        },
+                        error: function() {
+                            $('#instrument-suggestions').html('Error fetching instrument data');
+                        }
+                    });
+                } else {
+                    $('#instrument-suggestions').html('');
+                }
+            });
+
+            $('#instrument-suggestions').on('click', 'div', function() {
+                var instrumentId = $(this).data('instrument-id');
+                $('#instrument_search').val($(this).text());
+                $('#instrument-suggestions').html('');
+                $('#instrument_id').val(instrumentId);
+            });
+
+            $('form').on('submit', function(e) {
+        e.preventDefault(); // Prevent form submission
+
+        var studentId = $('input[name="student_id"]').val();
+        var instrumentId = $('input[name="instrument_id"]').val();
+        if (!instrumentId) {
+            $('#error-message').html('Please select an instrument.');
+            return;
+        }
+
+        var dateOfLoan = new Date($('#date_of_loan').val());
+        var duration = $('#duration').val();
+        var durationPeriod = $('#duration_period').val();
+        var cost = $('#cost').val();
+        var dateOfReturn = new Date($('#date_of_return').val());
+
+        // Check if the instrument is available
+        $.ajax({
+            url: '/check_instrument_availability',
+            type: 'GET',
+            data: { instrument_id: instrumentId },
+            success: function(response) {
+                if (response.is_available !== undefined) {
+                    if (response.is_available) {
+                        // Check other conditions
+                        var errors = [];
+
+                        if (dateOfLoan > new Date()) {
+                            errors.push('Date of loan cannot be in the future.');
+                        }
+
+                        if (cost <= 0) {
+                            errors.push('Cost must be greater than zero.');
+                        }
+
+                        if (errors.length > 0) {
+                            $('#error-message').html(errors.join('<br>'));
+                        } else {
+                            // Submit the form if no errors
+                            $('form')[0].submit();
+                        }
+                    } else {
+                        $('#error-message').html('The selected instrument is already on loan.');
+                    }
+                } else {
+                    $('#error-message').html(response.error);
+                }
+            },
+            error: function() {
+                $('#error-message').html('Error checking instrument availability.');
+            }
+        });
+    });
+});
+    </script>
+
+</body>
+</html>

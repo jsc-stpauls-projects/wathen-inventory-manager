@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Return Instrument</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Return Instrument</h1>
+    </header>
+
+    <nav>
+        <ul>
+            <li><a href="{{ url_for('in_page') }}">In</a></li>
+            <li><a href="{{ url_for('out_page') }}">Out</a></li>
+            <li>
+                <a href="#">Modify</a>
+                <ul>
+                    <li><a href="{{ url_for('modify_student') }}">Student</a></li>
+                    <li><a href="{{ url_for('modify_instrument') }}">Instrument</a></li>
+                    <li><a href="{{ url_for('modify_loan') }}">Loan</a></li>
+                </ul>
+            </li>            
+            <li>
+                <a href="#">Information</a>
+                <ul>
+                    <li><a href="{{ url_for('info_student') }}">Student</a></li>
+                    <li><a href="{{ url_for('info_instrument') }}">Instrument</a></li>
+                </ul>
+            </li>
+            <li><a href="{{ url_for('return_page') }}">Return</a></li>
+        </ul>
+    </nav>
+
+    <main>
+        {% if loans %}
+        <table id="loan-table">
+            <thead>
+                <tr>
+                    <th>Student</th>
+                    <th>Instrument</th>
+                    <th>Loan Date</th>
+                    <th>Return Date</th>
+                    <th>Select</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for loan in loans %}
+                <tr data-loan-id="{{ loan.id }}">
+                    <td>{{ loan.student.preferred_name }} {{ loan.student.surname }} ({{ loan.student.student_id }})</td>
+                    <td>{{ loan.instrument.name }} ({{ loan.instrument.id }})</td>
+                    <td>{{ loan.date_of_loan }}</td>
+                    <td>{{ loan.date_of_return }}</td>
+                    <td><input type="checkbox" class="loan-checkbox"></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <button id="delete-button">Delete</button>
+        {% else %}
+        <p>No current loans found.</p>
+        {% endif %}
+    </main>
+
+    <script>
+        $(document).ready(function() {
+            $('#delete-button').click(function() {
+                var loanIds = [];
+                $('.loan-checkbox:checked').each(function() {
+                    var loanId = $(this).closest('tr').data('loan-id');
+                    loanIds.push(loanId);
+                });
+
+                if (loanIds.length > 0 && confirm('Are you sure you want to return these instruments?')) {
+                    $.ajax({
+                        url: '/return_instruments',
+                        type: 'POST',
+                        data: JSON.stringify({loan_ids: loanIds}),
+                        contentType: 'application/json',
+                        success: function(response) {
+                            alert(response.message);
+                            window.location.reload();
+                        },
+                        error: function(xhr, status, error) {
+                            alert('An error occurred while returning the instruments.');
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

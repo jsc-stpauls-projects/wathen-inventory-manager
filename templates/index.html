@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Homepage</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <h1>Welcome to the Music School Management System</h1>
+    <nav>
+        <ul>
+            <li><a href="{{ url_for('in_page') }}">In</a></li>
+            <li><a href="{{ url_for('out_page') }}">Out</a></li>
+            <li>
+                <a href="#">Modify</a>
+                <ul>
+                    <li><a href="{{ url_for('modify_student') }}">Student</a></li>
+                    <li><a href="{{ url_for('modify_instrument') }}">Instrument</a></li>
+                    <li><a href="{{ url_for('modify_loan') }}">Loan</a></li>
+                </ul>
+            </li>            
+            <li>
+                <a href="#">Information</a>
+                <ul>
+                    <li><a href="{{ url_for('info_student') }}">Student</a></li>
+                    <li><a href="{{ url_for('info_instrument') }}">Instrument</a></li>
+                </ul>
+            </li>
+            <li><a href="{{ url_for('return_page') }}">Return</a></li>
+        </ul>
+    </nav>
+    <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>this is the homepage. there is no content here. use one of the links above to get started.
+</body>
+</html>

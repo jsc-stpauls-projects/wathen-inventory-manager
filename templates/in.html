@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add New Instrument</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <header>
+        <h1>Add New Instrument</h1>
+    </header>
+    
+    <nav>
+        <ul>
+            <li><a href="{{ url_for('in_page') }}">In</a></li>
+            <li><a href="{{ url_for('out_page') }}">Out</a></li>
+            <li>
+                <a href="#">Modify</a>
+                <ul>
+                    <li><a href="{{ url_for('modify_student') }}">Student</a></li>
+                    <li><a href="{{ url_for('modify_instrument') }}">Instrument</a></li>
+                    <li><a href="{{ url_for('modify_loan') }}">Loan</a></li>
+                </ul>
+            </li>            
+            <li>
+                <a href="#">Information</a>
+                <ul>
+                    <li><a href="{{ url_for('info_student') }}">Student</a></li>
+                    <li><a href="{{ url_for('info_instrument') }}">Instrument</a></li>
+                </ul>
+            </li>
+            <li><a href="{{ url_for('return_page') }}">Return</a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <form method="post" action="{{ url_for('in_page') }}">
+            <div class="form-group">
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+            <div class="form-group">
+                <label for="description">Description:</label>
+                <textarea id="description" name="description"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="serial_no">Serial Number:</label>
+                <input type="text" id="serial_no" name="serial_no" required>
+            </div>
+            <div class="form-group">
+                <label for="last_valuation_date">Last Valuation Date:</label>
+                <input type="date" id="last_valuation_date" name="last_valuation_date">
+            </div>
+            <div class="form-group">
+                <label for="last_valuation_amount">Last Valuation Amount:</label>
+                <input type="number" id="last_valuation_amount" name="last_valuation_amount" step="0.01">
+            </div>
+            <div class="form-group">
+                <label for="purchased_date">Purchased Date:</label>
+                <input type="date" id="purchased_date" name="purchased_date">
+            </div>
+            <div class="form-group">
+                <label for="vendor">Vendor:</label>
+                <input type="text" id="vendor" name="vendor" required>
+            </div>
+            <div class="form-group">
+                <label for="notes">Notes:</label>
+                <textarea id="notes" name="notes"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="maintenance_notes">Maintenance Notes:</label>
+                <textarea id="maintenance_notes" name="maintenance_notes"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="storage_location">Storage Location:</label>
+                <input type="text" id="storage_location" name="storage_location" required>
+            </div>
+            <div class="form-group">
+                <label for="school">School:</label>
+                <select id="school" name="school" required>
+                    <option value="">Select School</option>
+                    <option value="JUNIOR">JUNIOR</option>
+                    <option value="SENIOR">SENIOR</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="category">Category:</label>
+                <select id="category" name="category" required>
+                    <option value="">Select Category</option>
+                    <option value="String">String</option>
+                    <option value="Woodwind">Woodwind</option>
+                    <option value="Brass">Brass</option>
+                    <option value="Percussion">Percussion</option>
+                    <option value="Keyboard">Keyboard</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+            <button type="submit">Add Instrument</button>
+        </form>
+    </main>
+</body>
+</html>
